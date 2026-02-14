@@ -7,6 +7,24 @@ cloudinary.config({
     api_secret:process.env.CLOUDINARY_API_SECRET,
 })
 
+// delete from cloudinary
+const deletefromCloudinay = async(publicId,resourceType="video")=>{
+    try {
+        if(!publicId) return null
+
+        // Cloudinary ka destroyer method use karein
+        const response = await cloudinary.uploader.destroy(publicId,{
+            resource_type:resourceType
+        })
+
+        return response
+        
+    } catch (error) {
+        console.log("Error while Deleting Video from cloudinary")
+        return null
+    }
+}
+
 const uploadOnCloudinay = async(locaFilePath)=>{
     try {
         if(!locaFilePath) return null
@@ -23,4 +41,4 @@ const uploadOnCloudinay = async(locaFilePath)=>{
     }
 }
 
-export  {uploadOnCloudinay}
+export  {uploadOnCloudinay,deletefromCloudinay}

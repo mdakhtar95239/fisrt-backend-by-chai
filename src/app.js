@@ -1,6 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from 'cors';
+import videoRouter from '../src/routes/video.route.js'
 
 const app= express()
 
@@ -21,6 +22,7 @@ app.use(cookieParser())
 import userRouter from './routes/user.route.js'
 
 app.use("/api/v1/users",userRouter)
+app.use("/api/v1/video",videoRouter)
 
 // http:localhost:8000/api/v1/users/register
 
