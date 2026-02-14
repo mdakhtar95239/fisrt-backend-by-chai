@@ -159,30 +159,28 @@ const updatevideo = asyncHandler(async(req,res)=>{
     throw new ApiError(404,"Title or Description is missing")
   }
 
-
+  // fetch video
+  const video = await Video.findById(videoId)
+  if(!video){
+    throw new ApiError(404,"Video not found")
+  }
+  
+  // check validation Only owner Update 
+  if(video.owner.toString() !== req.user?._id.toString()){
+    throw new ApiError(404,"Only Owner Edit The Thumbnail and some ")
+  }
+  
   const thumbnaillocalpath = req.file?.path
   if(!thumbnaillocalpath){
     throw new ApiError(404,"Thumbnail is Missing")
   }
   // console.log("thumbnaillocalpath : ",thumbnaillocalpath)
 
-     
-  // fetch video
-   const video = await Video.findById(videoId)
-    if(!video){
-      throw new ApiError(404,"Video not found")
-    }
-    
-    // check validation Only owner Update 
-    if(video.owner.toString() !== req.user?._id.toString()){
-      throw new ApiError(404,"Only Owner Edit The Thumbnail and some ")
-    }
-
-      // uploadCloudinary
-    const thumbnailUpload = await uploadOnCloudinay(thumbnaillocalpath)
-    if(!thumbnailUpload.url){
-      throw new ApiError(500,"Thumbnal Updating failed")
-    }
+  // uploadCloudinary
+  const thumbnailUpload = await uploadOnCloudinay(thumbnaillocalpath)
+  if(!thumbnailUpload.url){
+    throw new ApiError(500,"Thumbnal Updating failed")
+  }
 
    const videoupdate = await Video.findByIdAndUpdate(videoId,{
     $set:{
