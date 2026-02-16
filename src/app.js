@@ -2,6 +2,8 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from 'cors';
 import videoRouter from '../src/routes/video.route.js'
+import commentRouter from './routes/comment.route.js'
+import likeRouter from "./routes/like.route.js";
 
 const app= express()
 
@@ -23,6 +25,8 @@ import userRouter from './routes/user.route.js'
 
 app.use("/api/v1/users",userRouter)
 app.use("/api/v1/video",videoRouter)
+app.use("/api/v1/comment",commentRouter)
+app.use("/api/v1/like",likeRouter)
 
 // http:localhost:8000/api/v1/users/register
 

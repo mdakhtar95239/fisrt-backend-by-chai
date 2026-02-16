@@ -3,7 +3,6 @@ import {Comment} from '../models/comment.model.js'
 import {ApiError} from '../utils/ApiError.js'
 import {ApiResponce} from '../utils/ApiResponce.js'
 import {asyncHandler} from '../utils/asyncHandler.js'
-import aggregatePaginate from 'mongoose-aggregate-paginate-v2'
 import { Video } from '../models/video.model.js'
 
 
@@ -70,12 +69,13 @@ const getVideoComments = asyncHandler(async(req,res)=>{
 
 const addComment = asyncHandler(async(req,res)=>{
     // add comment to a video
-    const {videoId} = req.params
-    const{content} = req.body
+    const {videoId} = req.params;
+    const {content} = req.body;
 
     if(!content){
         throw new ApiError(400,"content of comment is required")
     }
+
     if(!isValidObjectId(videoId)){
         throw new ApiError(400,"invalid video Id")
     }
@@ -91,6 +91,7 @@ const addComment = asyncHandler(async(req,res)=>{
         video:videoId,
         owner:req.user?._id
     })
+    console.log(comments)
 
     if(!comments){
         throw new ApiError(500,"something went wrong while adding comment")
@@ -140,8 +141,50 @@ const updateComment = asyncHandler(async(req,res)=>{
 
 })
 
+const deleteComment = asyncHandler(async(req,res)=>{
+    const {commentId} = req.params
+
+    if(!isValidObjectId(commentId)){
+        throw new ApiError(400,"Comment Id not valid")
+    }
+
+    const comment= await Comment.findById(commentId)
+    if(!comment){
+        throw new ApiError(400,"comment not found")
+    }
+
+    // vodeo details
+    const video = await Video.findById(comment.video)
+    if(!video){
+        throw new ApiError(400,"check requester video owner or not")
+    }
+
+    // video Owner
+    const isVideoOwner = video.owner.toString() === req.user?._id.toString();
+    // check commen Owner
+    const isCommentOwner = comment.owner.toString() === req.user?._id.toString();
+
+    if(!isVideoOwner && !isCommentOwner){
+        throw new ApiError(400,"You do not have permission to delete Comment")
+    }
+
+
+    const deletedComment = await Comment.findByIdAndDelete(commentId)
+    if(!deletedComment){
+        throw new ApiError(500,"Comment Delete Failed")
+    }
+
+    return res
+    .status(200)
+    .json(new ApiResponce(200,{},"Comment deleted  Successfully"))
+
+})
+
+
 export {
     getVideoComments,
     addComment,
     updateComment,
+    deleteComment,
+
 }
