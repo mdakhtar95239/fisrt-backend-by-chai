@@ -91,7 +91,7 @@ const addComment = asyncHandler(async(req,res)=>{
         video:videoId,
         owner:req.user?._id
     })
-    console.log(comments)
+    // console.log(comments)
 
     if(!comments){
         throw new ApiError(500,"something went wrong while adding comment")
